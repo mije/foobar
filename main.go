@@ -4,8 +4,8 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"net"
 	"net/http"
+	"os"
 )
 
 var pathFlag = flag.String("path", "", "specify the URL root")
@@ -19,11 +19,11 @@ func main() {
 	path := *pathFlag
 
 	http.HandleFunc(fmt.Sprintf("/%s", path), func(rw http.ResponseWriter, r *http.Request) {
-		addr, err := ip()
+		host, err := os.Hostname()
 		if err != nil {
 			http.Error(rw, err.Error(), http.StatusInternalServerError)
 		}
-		fmt.Fprintln(rw, addr)
+		fmt.Fprintln(rw, host)
 		fmt.Fprintln(rw, r.URL.String())
 	})
 	http.HandleFunc(fmt.Sprintf("/%s/health", path), func(rw http.ResponseWriter, r *http.Request) {
@@ -35,19 +35,4 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-}
-
-func ip() (string, error) {
-	addrs, err := net.InterfaceAddrs()
-	if err != nil {
-		return "", err
-	}
-	for _, addr := range addrs {
-		if ipnet, ok := addr.(*net.IPNet); ok {
-			if ipnet.IP.To4() != nil {
-				return ipnet.IP.String(), nil
-			}
-		}
-	}
-	return "N/A", nil
 }
