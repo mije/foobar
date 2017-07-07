@@ -23,8 +23,8 @@ func main() {
 		if err != nil {
 			http.Error(rw, err.Error(), http.StatusInternalServerError)
 		}
-		fmt.Fprintf(rw, "%s\n", addr)
-		fmt.Fprintf(rw, "\tURL=%s", r.URL.String())
+		fmt.Fprintln(rw, addr)
+		fmt.Fprintln(rw, r.URL.String())
 	})
 	http.HandleFunc(fmt.Sprintf("/%s/health", path), func(rw http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(rw, "OK")
