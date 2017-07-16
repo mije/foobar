@@ -1,1 +1,1 @@
-CREATE SCHEMA foobar;
+CREATE SCHEMA public;

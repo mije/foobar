@@ -1,1 +1,1 @@
-DROP SCHEMA foobar;
+DROP SCHEMA public CASCADE;
