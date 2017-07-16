@@ -14,17 +14,17 @@ func init() {
 	mustGetenv := func(key string) string {
 		val := os.Getenv(key)
 		if val == "" {
-			log.Fatalf("test: init: unable to find %q", key)
+			log.Fatalf("test: env: unable to find %q", key)
 		}
 		return val
 	}
 	m, err := migrate.New(mustGetenv("DB_MIGRATIONS"), mustGetenv("DB_URL"))
 	if err != nil {
-		log.Fatalf("test: init: %v", err)
+		log.Fatalf("test: create migration: %v", err)
 	}
 
 	if err := m.Up(); err != nil {
-		log.Fatalf("test: init: %v", err)
+		log.Fatalf("test: database up: %v", err)
 	}
 }
 
