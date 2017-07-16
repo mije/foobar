@@ -28,5 +28,5 @@ jobs:
           name: Run tests
           environment:
               DB_URL: "postgres://rot@localhost:5432/foobar?sslmode=disable"
-              DB_MIGRATIONS: "/go/src/github.com/mije/foobar/migrations"
+              DB_MIGRATIONS: "file:///go/src/github.com/mije/foobar/migrations"
           command: go test -v ./...
