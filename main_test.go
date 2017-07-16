@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/mattes/migrate"
+	_ "github.com/mattes/migrate/database/postgres"
 )
 
 func init() {
