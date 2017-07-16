@@ -7,6 +7,8 @@ import (
 	"os"
 	"testing"
 
+	_ "github.com/lib/pq"
+
 	"github.com/mattes/migrate"
 	_ "github.com/mattes/migrate/database/postgres"
 )
