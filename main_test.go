@@ -87,14 +87,15 @@ func TestBook(t *testing.T) {
 		}
 		for rows.Next() {
 			var (
-				id    int
-				title string
+				id       int
+				title    string
+				authorId uint64
 			)
-			err = rows.Scan(&id, &title)
+			err = rows.Scan(&id, &title, &authorId)
 			if err != nil {
 				return err
 			}
-			fmt.Printf("%v | %v \n", id, title)
+			fmt.Printf("%v | %v | %v \n", id, title, authorId)
 		}
 		if err := rows.Err(); err != nil {
 			return err
