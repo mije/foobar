@@ -45,13 +45,11 @@ func withDB(t *testing.T, fn func(sql.DB) error) {
 		t.Fatal(err)
 	}
 
-	err := fn(db)
-	if err != nil {
+	if err := fn(db); err != nil {
 		t.Fatal(err)
 	}
 
-	err := db.Close()
-	if err != nil {
+	if err := db.Close(); err != nil {
 		t.Log(err)
 	}
 }
@@ -77,6 +75,7 @@ func TestPerson(t *testing.T) {
 		if err := rows.Err(); err != nil {
 			return err
 		}
+		return nil
 	})
 }
 
@@ -100,5 +99,6 @@ func TestBook(t *testing.T) {
 		if err := rows.Err(); err != nil {
 			return err
 		}
+		return nil
 	})
 }
