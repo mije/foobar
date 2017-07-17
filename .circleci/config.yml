@@ -29,4 +29,4 @@ jobs:
           environment:
               DB_URL: "postgres://ubuntu@localhost:5432/foobar?sslmode=disable"
               DB_MIGRATIONS: "file:///go/src/github.com/mije/foobar/migrations"
-          command: go test -v ./...
+          command: go test -v ./... -tags integration
