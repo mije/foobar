@@ -34,7 +34,7 @@ func init() {
 	}
 }
 
-func withDB(t *testing.T, fn func(sql.DB) error) {
+func withDB(t *testing.T, fn func(*sql.DB) error) {
 	dbURL := os.Getenv("DB_URL")
 	if dbURL == "" {
 		t.Fatal("unable to find \"DB_URL\"")
@@ -55,7 +55,7 @@ func withDB(t *testing.T, fn func(sql.DB) error) {
 }
 
 func TestPerson(t *testing.T) {
-	withDB(t, func(db sql.DB) error {
+	withDB(t, func(db *sql.DB) error {
 		rows, err := db.Query("SELECT * FROM person")
 		if err != nil {
 			return err
@@ -80,7 +80,7 @@ func TestPerson(t *testing.T) {
 }
 
 func TestBook(t *testing.T) {
-	withDB(t, func(db sql.DB) error {
+	withDB(t, func(db *sql.DB) error {
 		rows, err := db.Query("SELECT * FROM book")
 		if err != nil {
 			return err
