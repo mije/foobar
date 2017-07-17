@@ -44,7 +44,7 @@ func TestEnv(t *testing.T) {
 	}
 	defer db.Close()
 
-	rows, err := db.Query("SELECT * FROM user")
+	rows, err := db.Query("SELECT * FROM person")
 	if err != nil {
 		t.Fatal(err)
 	}
