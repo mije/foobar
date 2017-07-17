@@ -1,2 +1,4 @@
-ALTER TABLE DROP CONSTRAINT fk_author;
-ALTER TABLE DROP COLUMN author_id;
+ALTER TABLE book
+    DROP CONSTRAINT fk_author;
+ALTER TABLE book
+    DROP book COLUMN author_id;

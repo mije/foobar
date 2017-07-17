@@ -87,10 +87,11 @@ func TestBook(t *testing.T) {
 		}
 		for rows.Next() {
 			var (
-				id    int
-				title string
+				id        int
+				title     string
+				author_id int64
 			)
-			err = rows.Scan(&id, &title)
+			err = rows.Scan(&id, &title, &author_id)
 			if err != nil {
 				return err
 			}
