@@ -61,6 +61,10 @@ func TestBook(t *testing.T) {
 	})
 }
 
+func TestEmpty(t *testing.T) {
+	// Nothing
+}
+
 func withDB(t *testing.T, fn func(*sql.DB) error) {
 	dbURL := os.Getenv("DB_URL")
 	if dbURL == "" {
