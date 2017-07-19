@@ -15,13 +15,13 @@ jobs:
           name: Pull dependencies
           command: go get -v -t -d -tags integration ./...
       - run:
-          name: Install dockerize
+          name: Install sqlcheck
           command: |
-            wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
-            sudo tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
-            rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+            wget https://github.com/mije/sqlcheck/releases/download/$SQLCHECK_VERSION/sqlcheck_postgres.linux-amd64-$SQLCHECK_VERSION.tar.gz
+            sudo tar -C /usr/local/bin -xzvf sqlcheck_postgres.linux-amd64-$SQLCHECK_VERSION.tar.gz
+            rm sqlcheck_postgres.linux-amd64-$SQLCHECK_VERSION.tar.gz
           environment:
-            DOCKERIZE_VERSION: v0.5.0
+            SQLCHECK_VERSION: v0.0.1
       - run:
           name: Install SQL migrate
           command: |
@@ -33,7 +33,16 @@ jobs:
             MIGRATE_VERSION: v3.0.1
       - run:
           name: Wait for PostgreSQL to become ready
-          command: dockerize -wait tcp://localhost:5432 -timeout 1m
+          command: |
+            for i in `seq 1 10`;
+            do
+              sqlcheck_postgres $DB_URL && echo Success && exit 0
+              echo -n .
+              sleep 1
+            done
+            echo Failure && exit 1
+          environment:
+            DB_URL: postgres://ubuntu@localhost:5432/foobar?sslmode=disable&connect_timeout=5
       - run:
           name: Migrate DB
           command: migrate -source $DB_MIGRATIONS -database $DB_URL up
