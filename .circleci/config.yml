@@ -15,15 +15,13 @@ jobs:
           name: Pull dependencies
           command: go get -v -t -d -tags integration ./...
       - run:
-          name: Wait for Postgres to be ready
-          command: |
-            for i in `seq 1 10`;
-            do
-              nc -z localhost 5432 && echo Success && exit 0
-              echo -n .
-              sleep 1
-            done
-            echo Failed waiting for Postgres && exit 1
+          name: Install dockerize
+          command: wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+          environment:
+            DOCKERIZE_VERSION: v0.5.0
+      - run:
+          name: Wait for PostgreSQL to become ready
+          command: dockerize -wait tcp://localhost:5432 -timeout 1m
       - run:
           name: Run tests
           environment:

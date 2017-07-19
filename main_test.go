@@ -25,17 +25,7 @@ func init() {
 		return val
 	}
 
-	dns := mustGetenv("DB_URL")
-
-	db, err := sql.Open("postgres", dns)
-	if err != nil {
-		log.Fatalf("test: db: open: %v", err)
-	}
-	if err := db.Close(); err != nil {
-		log.Fatalf("test: db: close: %v", err)
-	}
-
-	m, err := migrate.New(mustGetenv("DB_MIGRATIONS"), dns)
+	m, err := migrate.New(mustGetenv("DB_MIGRATIONS"), mustGetenv("DB_URL"))
 	if err != nil {
 		log.Fatalf("test: create migration: %v", err)
 	}
