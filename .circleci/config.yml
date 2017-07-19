@@ -16,12 +16,19 @@ jobs:
           command: go get -v -t -d -tags integration ./...
       - run:
           name: Install dockerize
-          command: wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && sudo tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && sudo mv /usr/local/bin/migrate.darwin-amd64 /usr/local/bin/migrate && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+          command: |
+            wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+            sudo tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+            rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
           environment:
             DOCKERIZE_VERSION: v0.5.0
       - run:
           name: Install SQL migrate
-          command: wget https://github.com/mattes/migrate/releases/download/$MIGRATE_VERSION/migrate.linux-amd64.tar.gz && sudo tar -C /usr/local/bin -xzvf migrate.linux-amd64.tar.gz && rm migrate.linux-amd64.tar.gz
+          command: |
+            wget https://github.com/mattes/migrate/releases/download/$MIGRATE_VERSION/migrate.linux-amd64.tar.gz
+            sudo tar -C /usr/local/bin -xzvf migrate.linux-amd64.tar.gz
+            sudo mv /usr/local/bin/migrate.darwin-amd64 /usr/local/bin/migrate
+            rm migrate.linux-amd64.tar.gz
           environment:
             MIGRATE_VERSION: v3.0.1
       - run:
