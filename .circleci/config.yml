@@ -15,7 +15,7 @@ jobs:
           name: Pull dependencies
           command: go get -v -t -d -tags integration ./...
       - run:
-          name: Install sqlcheck
+          name: Install SQL check
           command: |
             wget https://github.com/mije/sqlcheck/releases/download/$SQLCHECK_VERSION/sqlcheck_postgres.linux-amd64-$SQLCHECK_VERSION.tar.gz
             sudo tar -C /usr/local/bin -xzvf sqlcheck_postgres.linux-amd64-$SQLCHECK_VERSION.tar.gz
@@ -32,15 +32,15 @@ jobs:
           environment:
             MIGRATE_VERSION: v3.0.1
       - run:
-          name: Wait for PostgreSQL to become ready
+          name: Wait for PostgreSQL
           command: |
             for i in `seq 1 10`;
             do
-              sqlcheck_postgres $DB_URL && echo Success && exit 0
-              echo -n .
+              sqlcheck_postgres $DB_URL && echo OK && exit 0
+              echo -n ""
               sleep 1
             done
-            echo Failure && exit 1
+            exit 1
           environment:
             DB_URL: postgres://ubuntu@localhost:5432/foobar?sslmode=disable&connect_timeout=5
       - run:
