@@ -1,5 +1,5 @@
+---
 version: 2
-
 jobs:
   build:
     working_directory: /go/src/github.com/mije/foobar
@@ -15,18 +15,33 @@ jobs:
           name: Pull dependencies
           command: go get -v -t -d -tags integration ./...
       - run:
-          name: Wait for Postgres to be ready
+          name: Install dockerize
           command: |
-            for i in `seq 1 10`;
-            do
-              nc -z localhost 5432 && echo Success && exit 0
-              echo -n .
-              sleep 1
-            done
-            echo Failed waiting for Postgres && exit 1
+            wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+            sudo tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+            rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+          environment:
+            DOCKERIZE_VERSION: v0.5.0
+      - run:
+          name: Install SQL migrate
+          command: |
+            wget https://github.com/mattes/migrate/releases/download/$MIGRATE_VERSION/migrate.linux-amd64.tar.gz
+            sudo tar -C /usr/local/bin -xzvf migrate.linux-amd64.tar.gz
+            sudo mv /usr/local/bin/migrate.linux-amd64 /usr/local/bin/migrate
+            rm migrate.linux-amd64.tar.gz
+          environment:
+            MIGRATE_VERSION: v3.0.1
+      - run:
+          name: Wait for PostgreSQL to become ready
+          command: dockerize -wait tcp://localhost:5432 -timeout 1m
+      - run:
+          name: Migrate DB
+          command: migrate -source $DB_MIGRATIONS -database $DB_URL up
+          environment:
+            DB_URL: postgres://ubuntu@localhost:5432/foobar?sslmode=disable
+            DB_MIGRATIONS: file:///go/src/github.com/mije/foobar/migrations
       - run:
           name: Run tests
-          environment:
-              DB_URL: "postgres://ubuntu@localhost:5432/foobar?sslmode=disable"
-              DB_MIGRATIONS: "file:///go/src/github.com/mije/foobar/migrations"
           command: go test -v -tags integration ./...
+          environment:
+            DB_URL: postgres://ubuntu@localhost:5432/foobar?sslmode=disable

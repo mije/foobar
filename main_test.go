@@ -5,65 +5,11 @@ package main
 import (
 	"database/sql"
 	"fmt"
-	"log"
 	"os"
 	"testing"
 
 	_ "github.com/lib/pq"
-
-	"github.com/mattes/migrate"
-	_ "github.com/mattes/migrate/database/postgres"
-	_ "github.com/mattes/migrate/source/file"
 )
-
-func init() {
-	mustGetenv := func(key string) string {
-		val := os.Getenv(key)
-		if val == "" {
-			log.Fatalf("test: env: unable to find %q", key)
-		}
-		return val
-	}
-
-	dns := mustGetenv("DB_URL")
-
-	db, err := sql.Open("postgres", dns)
-	if err != nil {
-		log.Fatalf("test: db: open: %v", err)
-	}
-	if err := db.Close(); err != nil {
-		log.Fatalf("test: db: close: %v", err)
-	}
-
-	m, err := migrate.New(mustGetenv("DB_MIGRATIONS"), dns)
-	if err != nil {
-		log.Fatalf("test: create migration: %v", err)
-	}
-
-	if err := m.Up(); err != nil {
-		log.Fatalf("test: database up: %v", err)
-	}
-}
-
-func withDB(t *testing.T, fn func(*sql.DB) error) {
-	dbURL := os.Getenv("DB_URL")
-	if dbURL == "" {
-		t.Fatal("unable to find \"DB_URL\"")
-	}
-
-	db, err := sql.Open("postgres", dbURL)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if err := fn(db); err != nil {
-		t.Fatal(err)
-	}
-
-	if err := db.Close(); err != nil {
-		t.Log(err)
-	}
-}
 
 func TestPerson(t *testing.T) {
 	withDB(t, func(db *sql.DB) error {
@@ -113,4 +59,24 @@ func TestBook(t *testing.T) {
 		}
 		return nil
 	})
+}
+
+func withDB(t *testing.T, fn func(*sql.DB) error) {
+	dbURL := os.Getenv("DB_URL")
+	if dbURL == "" {
+		t.Fatal("unable to find \"DB_URL\"")
+	}
+
+	db, err := sql.Open("postgres", dbURL)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if err := fn(db); err != nil {
+		t.Fatal(err)
+	}
+
+	if err := db.Close(); err != nil {
+		t.Log(err)
+	}
 }
