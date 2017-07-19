@@ -1,5 +1,5 @@
+---
 version: 2
-
 jobs:
   build:
     working_directory: /go/src/github.com/mije/foobar
@@ -20,11 +20,19 @@ jobs:
           environment:
             DOCKERIZE_VERSION: v0.5.0
       - run:
+          name: Install SQL migrate
+          command: wget https://github.com/mattes/migrate/releases/download/$MIGRATE_VERSION/migrate.linux-amd64.tar.gz && sudo tar -C /usr/local/bin -xzvf migrate.linux-amd64.tar.gz && rm migrate.linux-amd64.tar.gz
+          environment:
+            MIGRATE_VERSION: v3.0.1
+      - run:
           name: Wait for PostgreSQL to become ready
           command: dockerize -wait tcp://localhost:5432 -timeout 1m
       - run:
-          name: Run tests
+          name: Migrate DB
+          command: migrate -source $DB_MIGRATIONS -database $DB_URL up
           environment:
-              DB_URL: "postgres://ubuntu@localhost:5432/foobar?sslmode=disable"
-              DB_MIGRATIONS: "file:///go/src/github.com/mije/foobar/migrations"
+            DB_URL: postgres://ubuntu@localhost:5432/foobar?sslmode=disable
+            DB_MIGRATIONS: file:///go/src/github.com/mije/foobar/migrations
+      - run:
+          name: Run tests
           command: go test -v -tags integration ./...
