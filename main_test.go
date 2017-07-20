@@ -62,7 +62,7 @@ func TestBook(t *testing.T) {
 }
 
 func TestEmpty(t *testing.T) {
-	// Nothing
+	t.FailNow()
 }
 
 func withDB(t *testing.T, fn func(*sql.DB) error) {
