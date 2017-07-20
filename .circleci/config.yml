@@ -10,8 +10,8 @@ jobs:
       - image: circleci/golang:1.8
       - image: circleci/postgres:9.6
         environment:
-          POSTGRES_USER: $FOOBAR_USER
-          POSTGRES_DB: $FOOBAR_DB
+          POSTGRES_USER: ubuntu
+          POSTGRES_DB: foobar
     steps:
       - checkout
       - run:
