@@ -15,14 +15,14 @@ jobs:
       - run:
           name: Pull dependencies
           command: go get -v -t -d -tags integration ./...
-      - run:
-          name: Install SQL check
-          command: |
-            wget https://github.com/mije/sqlcheck/releases/download/$SQLCHECK_VERSION/sqlcheck_postgres.linux-amd64-$SQLCHECK_VERSION.tar.gz
-            sudo tar -C /usr/local/bin -xzvf sqlcheck_postgres.linux-amd64-$SQLCHECK_VERSION.tar.gz
-            rm sqlcheck_postgres.linux-amd64-$SQLCHECK_VERSION.tar.gz
-          environment:
-            SQLCHECK_VERSION: v0.0.1
+    #   - run:
+    #       name: Install SQL check
+    #       command: |
+    #         wget https://github.com/mije/sqlcheck/releases/download/$SQLCHECK_VERSION/sqlcheck_postgres.linux-amd64-$SQLCHECK_VERSION.tar.gz
+    #         sudo tar -C /usr/local/bin -xzvf sqlcheck_postgres.linux-amd64-$SQLCHECK_VERSION.tar.gz
+    #         rm sqlcheck_postgres.linux-amd64-$SQLCHECK_VERSION.tar.gz
+    #       environment:
+    #         SQLCHECK_VERSION: v0.0.1
       - run:
           name: Install SQL migrate
           command: |
@@ -33,17 +33,32 @@ jobs:
           environment:
             MIGRATE_VERSION: v3.0.1
       - run:
-          name: Wait for PostgreSQL
+          name: Install psql
+          command: sudo apt-get install postgresql-client
+      - run:
+          name: Wait for postgresql
           command: |
             for i in `seq 1 10`;
             do
-              sqlcheck_postgres $DB_URL && echo OK && exit 0
+              psql $DB_URL -c '\q' && echo OK && exit 0
               echo -n ""
               sleep 1
             done
             exit 1
           environment:
             DB_URL: postgres://foobar:s3cret@localhost:5432/foobar?sslmode=disable&connect_timeout=5
+    #   - run:
+    #       name: Wait for PostgreSQL
+    #       command: |
+    #         for i in `seq 1 10`;
+    #         do
+    #           sqlcheck_postgres $DB_URL && echo OK && exit 0
+    #           echo -n ""
+    #           sleep 1
+    #         done
+    #         exit 1
+    #       environment:
+    #         DB_URL: postgres://foobar:s3cret@localhost:5432/foobar?sslmode=disable&connect_timeout=5
       - run:
           name: Migrate DB
           command: migrate -source $DB_MIGRATIONS -database $DB_URL up
