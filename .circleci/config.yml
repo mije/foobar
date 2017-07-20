@@ -3,6 +3,9 @@ version: 2
 jobs:
   build:
     working_directory: /go/src/github.com/mije/foobar
+    environment:
+      DB_USER: foobar
+      DB_PASSWD: s3cret
     docker:
       - image: circleci/golang:1.8
       - image: circleci/postgres:9.6
@@ -37,18 +40,15 @@ jobs:
           command: |
             for i in `seq 1 10`;
             do
-              sqlcheck_postgres $DB_URL && echo OK && exit 0
+              sqlcheck_postgres postgres://$DB_USER:$DB_PASSWD@localhost:5432?sslmode=disable&connect_timeout=5 && echo OK && exit 0
               echo -n ""
               sleep 1
             done
             exit 1
-          environment:
-            DB_URL: postgres://foobar:s3cret@localhost:5432/foobar?sslmode=disable&connect_timeout=5
       - run:
           name: Migrate DB
-          command: migrate -source $DB_MIGRATIONS -database $DB_URL up
+          command: migrate -source $DB_MIGRATIONS -database postgres://$DB_USER:$DB_PASSWD@localhost:5432?sslmode=disable up
           environment:
-            DB_URL: postgres://foobar:s3cret@localhost:5432/foobar?sslmode=disable
             DB_MIGRATIONS: file:///go/src/github.com/mije/foobar/migrations
       - run:
           name: Run tests
